@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP Developing.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #E1306C;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .download-box {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #E1306C;
+        }
+
+        .input-group button {
+            padding: 12px 20px;
+            background: #E1306C;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #C13584;
+        }
+
+        .info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #E1306C;
+        }
+
+        .info p {
+            margin-bottom: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info ol {
+            padding-left: 20px;
+        }
+
+        .info li {
+            margin-bottom: 5px;
+        }
+
+        .result {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .video-preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            padding: 10px 15px;
+            background: #E1306C;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #C13584;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #E1306C;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #ff3333;
+            background: #ffeeee;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fab fa-instagram"></i> Instagram Reels Downloader</h1>
+            <p>Download Instagram Reels videos quickly and easily</p>
+        </header>
+        
+        <div class="download-box">
+            <div class="error" id="error-message"></div>
+            
+            <div class="input-group">
+                <input type="text" id="reel-url" placeholder="Paste Instagram Reel URL here...">
+                <button id="download-btn">Download</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your request...</p>
+            </div>
+            
+            <div class="info">
+                <p><i class="fas fa-info-circle"></i> How to use:</p>
+                <ol>
+                    <li>Open Instagram and copy the Reel URL</li>
+                    <li>Paste the URL above</li>
+                    <li>Click Download</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Your Reel is Ready!</h2>
+            <video controls class="video-preview" id="video-preview"></video>
+            <div class="download-options">
+                <a href="#" class="download-btn" id="download-hd">
+                    <i class="fas fa-download"></i> Download HD
+                </a>
+                <a href="#" class="download-btn" id="download-sd">
+                    <i class="fas fa-download"></i> Download SD
+                </a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Disclaimer: This tool is for personal use only. Please respect copyright laws.</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reelUrlInput = document.getElementById('reel-url');
+            const downloadBtn = document.getElementById('download-btn');
+            const resultDiv = document.getElementById('result');
+            const videoPreview = document.getElementById('video-preview');
+            const downloadHd = document.getElementById('download-hd');
+            const downloadSd = document.getElementById('download-sd');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error-message');
+            
+            downloadBtn.addEventListener('click', function() {
+                const reelUrl = reelUrlInput.value.trim();
+                
+                // Validate URL
+                if (!reelUrl) {
+                    showError('Please enter a Reel URL');
+                    return;
+                }
+                
+                if (!isValidInstagramUrl(reelUrl)) {
+                    showError('Please enter a valid Instagram Reel URL');
+                    return;
+                }
+                
+                // Show loading
+                loadingDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                resultDiv.style.display = 'none';
+                
+                // In a real implementation, you would call your backend API here
+                // For demonstration, we'll simulate an API call with setTimeout
+                setTimeout(function() {
+                    loadingDiv.style.display = 'none';
+                    
+                    // This is just a demo - in a real app, you would get the actual video URL from your API
+                    if (Math.random() > 0.1) { // 90% chance of "success" for demo
+                        // Demo video URL (would be replaced with actual Reel URL from your API)
+                        const demoVideoUrl = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
+                        
+                        videoPreview.src = demoVideoUrl;
+                        downloadHd.href = demoVideoUrl;
+                        downloadSd.href = demoVideoUrl;
+                        
+                        resultDiv.style.display = 'block';
+                    } else {
+                        showError('Failed to download Reel. Please try again or check the URL.');
+                    }
+                }, 2000);
+            });
+            
+            function isValidInstagramUrl(url) {
+                // Basic validation for Instagram URLs
+                return url.match(/https?:\/\/(www\.)?instagram\.com\/reel\/.+/i) || 
+                       url.match(/https?:\/\/(www\.)?instagram\.com\/p\/.+/i);
+            }
+            
+            function showError(message) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                loadingDiv.style.display = 'none';
+                resultDiv.style.display = 'none';
+            }
+            
+            // Handle paste event to automatically detect URLs
+            reelUrlInput.addEventListener('paste', function(e) {
+                setTimeout(function() {
+                    const pastedText = reelUrlInput.value.trim();
+                    if (isValidInstagramUrl(pastedText)) {
+                        downloadBtn.click();
+                    }
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
