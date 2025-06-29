@@ -3,312 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MP Developing.</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>JPG to PNG Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        .dropzone {
+            border: 2px dashed #4a5568;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease-in-out;
         }
-
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
+        .dropzone.active {
+            border-color: #4299e1;
+            background-color: #ebf8ff;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        .file-info {
+            transition: all 0.3s ease;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
+        #preview-container {
+            max-height: 60vh;
+            overflow-y: auto;
         }
-
-        header h1 {
-            color: #E1306C;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .preview-image {
+            transition: transform 0.2s ease-out;
         }
-
-        header p {
-            color: #666;
-        }
-
-        .download-box {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            display: flex;
-            margin-bottom: 20px;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            font-size: 16px;
-            outline: none;
-            transition: border 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #E1306C;
-        }
-
-        .input-group button {
-            padding: 12px 20px;
-            background: #E1306C;
-            color: white;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .input-group button:hover {
-            background: #C13584;
-        }
-
-        .info {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #E1306C;
-        }
-
-        .info p {
-            margin-bottom: 10px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info ol {
-            padding-left: 20px;
-        }
-
-        .info li {
-            margin-bottom: 5px;
-        }
-
-        .result {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            text-align: center;
-            display: none;
-        }
-
-        .video-preview {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .download-options {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            padding: 10px 15px;
-            background: #E1306C;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.3s;
-        }
-
-        .download-btn:hover {
-            background: #C13584;
-        }
-
-        footer {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-top: 30px;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #E1306C;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error {
-            color: #ff3333;
-            background: #ffeeee;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
+        .preview-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1><i class="fab fa-instagram"></i> Instagram Reels Downloader</h1>
-            <p>Download Instagram Reels videos quickly and easily</p>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <div class="flex justify-center mb-6">
+                <img 
+                    src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/eb6d83e0-c65b-475c-88bd-60132e8570d3.png" 
+                    alt="Modern geometric abstract logo with blue gradient representing image conversion" 
+                    class="w-32 h-32 object-contain"
+                >
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">JPG to PNG Converter</h1>
+            <p class="text-xl text-gray-600">Convert your JPG images to PNG format with transparency support</p>
         </header>
-        
-        <div class="download-box">
-            <div class="error" id="error-message"></div>
-            
-            <div class="input-group">
-                <input type="text" id="reel-url" placeholder="Paste Instagram Reel URL here...">
-                <button id="download-btn">Download</button>
+
+        <main class="max-w-4xl mx-auto">
+            <div id="dropzone" 
+                 class="dropzone p-8 mb-8 text-center cursor-pointer"
+                 ondragover="handleDragOver(event)" 
+                 ondragleave="handleDragLeave(event)" 
+                 ondrop="handleDrop(event)">
+                <div id="dropzone-content">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e712379a-6cac-40cd-a686-be87cde879d1.png" alt="Upward arrow with stylized digital upload icon" class="mx-auto mb-4 h-24 w-auto">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Drag & Drop Your Images Here</h2>
+                    <p class="text-gray-500 mb-4">or</p>
+                    <button id="file-input-button" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-full transition duration-200">
+                        Browse Files
+                    </button>
+                    <input type="file" id="file-input" accept=".jpg, .jpeg" multiple class="hidden">
+                </div>
+                <div id="file-info" class="file-info hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-medium text-gray-700">Files to Convert</h3>
+                        <button id="clear-button" class="text-blue-500 hover:text-blue-700 font-medium">
+                            Clear All
+                        </button>
+                    </div>
+                    <div id="file-list" class="mb-4"></div>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button id="convert-button" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-full transition duration-200">
+                            Convert to PNG
+                        </button>
+                        <button id="add-more-button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-full transition duration-200">
+                            Add More
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Processing your request...</p>
+
+            <div id="preview-section" class="hidden">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Converted PNG Images</h2>
+                <div id="preview-container" class="bg-white rounded-lg shadow-md p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div class="mt-4 text-right">
+                    <button id="download-all-button" class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded-full transition duration-200 inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download All
+                    </button>
+                </div>
             </div>
-            
-            <div class="info">
-                <p><i class="fas fa-info-circle"></i> How to use:</p>
-                <ol>
-                    <li>Open Instagram and copy the Reel URL</li>
-                    <li>Paste the URL above</li>
-                    <li>Click Download</li>
-                </ol>
+
+            <div id="conversion-info" class="mt-8 p-6 bg-blue-50 rounded-lg hidden">
+                <h3 class="text-lg font-medium text-blue-800 mb-2">About JPG to PNG Conversion</h3>
+                <p class="text-blue-600">PNG format supports transparency and typically provides lossless compression, making it ideal for graphics, logos, and images that require editing. Converting from JPG to PNG will retain all visible quality, though the file size may increase.</p>
             </div>
-        </div>
-        
-        <div class="result" id="result">
-            <h2>Your Reel is Ready!</h2>
-            <video controls class="video-preview" id="video-preview"></video>
-            <div class="download-options">
-                <a href="#" class="download-btn" id="download-hd">
-                    <i class="fas fa-download"></i> Download HD
-                </a>
-                <a href="#" class="download-btn" id="download-sd">
-                    <i class="fas fa-download"></i> Download SD
-                </a>
-            </div>
-        </div>
-        
-        <footer>
-            <p>.</p>
+        </main>
+
+        <footer class="mt-16 text-center text-gray-500 text-sm">
+            <p>© 2025 MP Developing. all rights reserved.</p>
         </footer>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const reelUrlInput = document.getElementById('reel-url');
-            const downloadBtn = document.getElementById('download-btn');
-            const resultDiv = document.getElementById('result');
-            const videoPreview = document.getElementById('video-preview');
-            const downloadHd = document.getElementById('download-hd');
-            const downloadSd = document.getElementById('download-sd');
-            const loadingDiv = document.getElementById('loading');
-            const errorDiv = document.getElementById('error-message');
+        // File handling variables
+        let files = [];
+        let convertedImages = [];
+        
+        // DOM elements
+        const dropzone = document.getElementById('dropzone');
+        const dropzoneContent = document.getElementById('dropzone-content');
+        const fileInfo = document.getElementById('file-info');
+        const fileList = document.getElementById('file-list');
+        const fileInput = document.getElementById('file-input');
+        const fileInputButton = document.getElementById('file-input-button');
+        const convertButton = document.getElementById('convert-button');
+        const clearButton = document.getElementById('clear-button');
+        const addMoreButton = document.getElementById('add-more-button');
+        const previewSection = document.getElementById('preview-section');
+        const previewContainer = document.getElementById('preview-container');
+        const downloadAllButton = document.getElementById('download-all-button');
+        const conversionInfo = document.getElementById('conversion-info');
+
+        // Event Listeners
+        fileInputButton.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        convertButton.addEventListener('click', convertToPng);
+        clearButton.addEventListener('click', clearAllFiles);
+        addMoreButton.addEventListener('click', () => fileInput.click());
+        downloadAllButton.addEventListener('click', downloadAll);
+
+        // Drag and Drop Handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('active');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('active');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('active');
             
-            downloadBtn.addEventListener('click', function() {
-                const reelUrl = reelUrlInput.value.trim();
-                
-                // Validate URL
-                if (!reelUrl) {
-                    showError('Please enter a Reel URL');
-                    return;
-                }
-                
-                if (!isValidInstagramUrl(reelUrl)) {
-                    showError('Please enter a valid Instagram Reel URL');
-                    return;
-                }
-                
-                // Show loading
-                loadingDiv.style.display = 'block';
-                errorDiv.style.display = 'none';
-                resultDiv.style.display = 'none';
-                
-                // In a real implementation, you would call your backend API here
-                // For demonstration, we'll simulate an API call with setTimeout
-                setTimeout(function() {
-                    loadingDiv.style.display = 'none';
-                    
-                    // This is just a demo - in a real app, you would get the actual video URL from your API
-                    if (Math.random() > 0.1) { // 90% chance of "success" for demo
-                        // Demo video URL (would be replaced with actual Reel URL from your API)
-                        const demoVideoUrl = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
-                        
-                        videoPreview.src = demoVideoUrl;
-                        downloadHd.href = demoVideoUrl;
-                        downloadSd.href = demoVideoUrl;
-                        
-                        resultDiv.style.display = 'block';
-                    } else {
-                        showError('Failed to download Reel. Please try again or check the URL.');
-                    }
-                }, 2000);
-            });
+            if (e.dataTransfer.files.length) {
+                processFiles(e.dataTransfer.files);
+            }
+        }
+
+        // File Selection Handler
+        function handleFileSelect(e) {
+            if (e.target.files.length) {
+                processFiles(e.target.files);
+            }
+            e.target.value = ''; // Reset input to allow selecting same files again
+        }
+
+        // Process selected files
+        function processFiles(selectedFiles) {
+            const newFiles = Array.from(selectedFiles).filter(file => 
+                file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')
+            );
             
-            function isValidInstagramUrl(url) {
-                // Basic validation for Instagram URLs
-                return url.match(/https?:\/\/(www\.)?instagram\.com\/reel\/.+/i) || 
-                       url.match(/https?:\/\/(www\.)?instagram\.com\/p\/.+/i);
+            if (newFiles.length === 0) {
+                alert('Please select JPG files only.');
+                return;
             }
             
-            function showError(message) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                loadingDiv.style.display = 'none';
-                resultDiv.style.display = 'none';
+            files = [...files, ...newFiles];
+            updateFileList();
+            showFileInfo();
+
+            // Hide conversion info after first file is added
+            conversionInfo.classList.add('hidden');
+        }
+
+        // Update the file list display
+        function updateFileList() {
+            fileList.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'flex items-center justify-between py-2 px-3 bg-gray-100 rounded mb-2';
+                
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'overflow-hidden';
+                
+                const fileName = document.createElement('div');
+                fileName.className = 'text-gray-800 font-medium truncate';
+                fileName.textContent = file.name;
+                
+                const fileSize = document.createElement('div');
+                fileSize.className = 'text-gray-500 text-sm';
+                fileSize.textContent = formatFileSize(file.size);
+                
+                fileInfo.appendChild(fileName);
+                fileInfo.appendChild(fileSize);
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'text-red-500 hover:text-red-700 ml-4';
+                removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+                removeBtn.onclick = () => removeFile(index);
+                
+                fileDiv.appendChild(fileInfo);
+                fileDiv.appendChild(removeBtn);
+                fileList.appendChild(fileDiv);
+            });
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Remove a file
+        function removeFile(index) {
+            files.splice(index, 1);
+            updateFileList();
+            
+            if (files.length === 0) {
+                hideFileInfo();
+                conversionInfo.classList.remove('hidden');
+            }
+        }
+
+        // Show file info section
+        function showFileInfo() {
+            dropzoneContent.classList.add('hidden');
+            fileInfo.classList.remove('hidden');
+        }
+
+        // Hide file info section
+        function hideFileInfo() {
+            dropzoneContent.classList.remove('hidden');
+            fileInfo.classList.add('hidden');
+            previewSection.classList.add('hidden');
+        }
+
+        // Clear all files
+        function clearAllFiles() {
+            files = [];
+            hideFileInfo();
+            conversionInfo.classList.remove('hidden');
+        }
+
+        // Convert JPG to PNG
+        function convertToPng() {
+            if (files.length === 0) {
+                alert('Please add files to convert first.');
+                return;
+            }
+
+            convertedImages = [];
+            previewContainer.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const pngUrl = canvas.toDataURL('image/png');
+                        
+                        // Store converted image data
+                        const convertedImage = {
+                            url: pngUrl,
+                            name: file.name.replace(/\.jpe?g$/, '.png').replace(/\.JPE?G$/, '.png'),
+                            size: pngUrl.length
+                        };
+                        
+                        convertedImages.push(convertedImage);
+                        addPreviewImage(convertedImage, index);
+                        
+                        // Show preview section when first image is converted
+                        if (index === 0) {
+                            previewSection.classList.remove('hidden');
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Add preview of converted image
+        function addPreviewImage(convertedImage, index) {
+            const previewCard = document.createElement('div');
+            previewCard.className = 'preview-image bg-white rounded-lg shadow overflow-hidden border border-gray-200';
+            
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'p-4 h-48 flex items-center justify-center bg-gray-50';
+            
+            const img = document.createElement('img');
+            img.className = 'max-h-full max-w-full object-contain';
+            img.src = convertedImage.url;
+            img.alt = `Converted version of ${convertedImage.name}`;
+            
+            imgWrapper.appendChild(img);
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'p-4 border-t border-gray-200';
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'text-gray-800 font-medium mb-1 truncate';
+            fileName.textContent = convertedImage.name;
+            
+            const fileSize = document.createElement('div');
+            fileSize.className = 'text-gray-500 text-sm mb-3';
+            fileSize.textContent = `Size: ${formatFileSize(convertedImage.size / 4 * 3)}`; // Approximate size
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition duration-200 flex items-center justify-center';
+            downloadBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Download
+            `;
+            downloadBtn.onclick = () => downloadImage(convertedImage.url, convertedImage.name);
+            
+            infoDiv.appendChild(fileName);
+            infoDiv.appendChild(fileSize);
+            infoDiv.appendChild(downloadBtn);
+            
+            previewCard.appendChild(imgWrapper);
+            previewCard.appendChild(infoDiv);
+            
+            previewContainer.appendChild(previewCard);
+        }
+
+        // Download a single image
+        function downloadImage(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Download all converted images
+        function downloadAll() {
+            if (convertedImages.length === 0) {
+                alert('No images to download. Please convert files first.');
+                return;
             }
             
-            // Handle paste event to automatically detect URLs
-            reelUrlInput.addEventListener('paste', function(e) {
-                setTimeout(function() {
-                    const pastedText = reelUrlInput.value.trim();
-                    if (isValidInstagramUrl(pastedText)) {
-                        downloadBtn.click();
-                    }
-                }, 100);
+            convertedImages.forEach(image => {
+                downloadImage(image.url, image.name);
             });
-        });
+        }
+
+        // Show conversion info initially
+        conversionInfo.classList.remove('hidden');
     </script>
 </body>
 </html>
